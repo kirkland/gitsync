@@ -5,16 +5,13 @@ Git sync solution.
 A script that goes through a list of directories which are git repositories, and
 for each one:
 
--- Verifies it is a git repo.
--- Verifies there is a remote named "gitsync" set up.
--- Adds and commits all files.
+X -- Verifies it is a git repo.
+X -- Verifies there is a remote named "gitsync" set up.
+X -- Adds and commits all files.
 -- Does a git pull --rebase.
 -- If rebase fails, runs git rebase --abort, and logs this.
--- Does a git push.
+X -- Does a git push.
 
 Another script (or an option) to start syncing a git repo. It will have some
 configuration of a "base" location (e.g. robmk.com:~/gitsync_repos), and adds
 that remote, creating a bare repo there first if necessary.
-
-Shell out, or use Ruby git gem? Options: git (deprecated), grit (deprecated),
-rugged.
