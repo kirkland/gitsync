@@ -14,7 +14,7 @@ class Repository
     repo_run "git add .", %{git commit -m "#{commit_message}"}
   end
 
-  def has_gitsync_remote?
+  def remote_configured?
     repo_run %{git remote | grep -E '^gitsync$'}
   end
 
@@ -28,6 +28,26 @@ class Repository
 
   def push
     repo_run "git push gitsync master"
+  end
+
+  def remote_repo_exists?
+    remote_run "cd #{REMOTE_REPO_PATH}", "stat #{repo_name}.git"
+  end
+
+  def setup_sync
+    should_push = false
+
+    if !remote_repo_exists?
+      should_push = true
+      create_remote_repo
+    end
+
+    if !remote_configured?
+      should_push = true
+      set_remote
+    end
+
+    push if should_push
   end
 
   private
