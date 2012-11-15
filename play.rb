@@ -1,39 +1,54 @@
-REMOTE_SYNC_HOST = "rob@robmk.com"
-REMOTE_REPO_PATH = "/home/rob/gitsync_repos"
+class Repository
+  REMOTE_SYNC_HOST = "rob@robmk.com"
+  REMOTE_REPO_PATH = "/home/rob/gitsync_repos"
 
+  def initialize(repo_path)
+    @repo_path = repo_path
 
-def commit_all_files(repo_path)
-  raise "#{repo_path} not a directory" unless File.directory? repo_path
-  raise "#{repo_path} not a git repository" unless File.directory? "#{repo_path}/.git"
+    raise "#{@repo_path} not a directory" unless File.directory? @repo_path
+    raise "#{@repo_path} not a git repository" unless File.directory? "#{@repo_path}/.git"
+  end
 
-  commit_message = %{Automatic commit for #{Time.now.strftime("%Y-%m-%d")}.}
-  command = %{cd #{repo_path} && git add . && git commit -m "#{commit_message}"}
+  def commit_all_files
+    commit_message = %{Automatic commit for #{Time.now.strftime("%Y-%m-%d")}.}
+    repo_run "git add .", %{git commit -m "#{commit_message}"}
+  end
 
-  system command
-end
+  def has_gitsync_remote?
+    repo_run %{git remote | grep -E '^gitsync$'}
+  end
 
-def has_gitsync_remote?(repo_path)
-  system "cd #{repo_path} && git remote | grep -E '^gitsync$'"
-end
+  def create_remote_repo
+    remote_run "cd #{REMOTE_REPO_PATH}", "git init --bare #{repo_name}.git"
+  end
 
-def repo_name(repo_path)
-  repo_path.split('/').last
-end
+  def set_remote
+    repo_run "git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name}"
+  end
 
-def create_remote_repo(repo_path)
-  command = %{ssh #{REMOTE_SYNC_HOST} 'cd #{REMOTE_REPO_PATH} && git init --bare #{repo_name(repo_path)}.git'}
+  def push
+    repo_run "git push gitsync master"
+  end
 
-  system command
-end
+  private
 
-def set_remote(repo_path)
-  command = %{cd #{repo_path} && git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name(repo_path)}}
+  def repo_name
+    @repo_path.split('/').last
+  end
 
-  system command
-end
+  def join_commands(commands)
+    commands.join(' && ')
+  end
 
-def push(repo_path)
-  command = %{cd #{repo_path} && git push gitsync master}
+  def run(*commands)
+    system join_commands(commands)
+  end
 
-  system command
+  def repo_run(*commands)
+    run("cd #{@repo_path}", *commands)
+  end
+
+  def remote_run(*commands)
+    system %{ssh #{REMOTE_SYNC_HOST} '#{join_commands(commands)}'}
+  end
 end
