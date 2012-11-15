@@ -10,8 +10,16 @@ class Repository
   end
 
   def commit_all_files
+    if repo_run "ls CONFLICT"
+      puts "Found a CONFLICT file, aborting."
+      return false
+    else
+      puts "no CONFLICT found"
+    end
+
     commit_message = %{Automatic commit for #{Time.now.strftime("%Y-%m-%d")}.}
     repo_run "git add .", %{git commit -m "#{commit_message}"}
+    true
   end
 
   def remote_configured?
@@ -36,11 +44,15 @@ class Repository
       log_error("Error during pull --rebase for #{@repo_path}")
       repo_run "echo Error during pull --rebase > CONFLICT"
       repo_run "git rebase --abort"
+      return false
     end
+
+    true
   end
 
   def push
     repo_run "git push gitsync master"
+    true
   end
 
   def remote_repo_exists?
@@ -61,6 +73,7 @@ class Repository
     end
 
     push if should_push
+    true
   end
 
   def self.sync(repo_path)
@@ -68,10 +81,7 @@ class Repository
   end
 
   def sync
-    setup_sync
-    commit_all_files
-    pull
-    push
+    setup_sync && commit_all_files && pull && push
   end
 
   private
