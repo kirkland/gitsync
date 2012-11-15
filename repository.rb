@@ -32,7 +32,11 @@ class Repository
 
   def pull
     result = repo_run "git pull --rebase gitsync master"
-    log_error("Error during pull --rebase for #{@repo_path}") unless result
+    if !result
+      log_error("Error during pull --rebase for #{@repo_path}")
+      repo_run "echo Error during pull --rebase > CONFLICT"
+      repo_run "git rebase --abort"
+    end
   end
 
   def push
