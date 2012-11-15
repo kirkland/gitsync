@@ -7,7 +7,7 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.3.1)
-    rugged (0.16.0)
+    rugged (0.17.0.b7)
     slop (3.3.3)
 
 PLATFORMS
@@ -15,4 +15,4 @@ PLATFORMS
 
 DEPENDENCIES
   pry
-  rugged
+  rugged (= 0.17.0.b7)
