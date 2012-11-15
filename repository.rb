@@ -26,6 +26,15 @@ class Repository
     repo_run "git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name}"
   end
 
+  def log_error(message)
+    puts message
+  end
+
+  def pull
+    result = repo_run "git pull --rebase gitsync master"
+    log_error("Error during pull --rebase for #{@repo_path}") unless result
+  end
+
   def push
     repo_run "git push gitsync master"
   end
@@ -48,6 +57,17 @@ class Repository
     end
 
     push if should_push
+  end
+
+  def self.sync(repo_path)
+    new(repo_path).sync
+  end
+
+  def sync
+    setup_sync
+    commit_all_files
+    pull
+    push
   end
 
   private
