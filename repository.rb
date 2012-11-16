@@ -31,7 +31,13 @@ class Repository
   end
 
   def set_remote
-    repo_run "git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name}"
+    if `hostname` =~ /robmk/
+      puts "Good hostname"
+      repo_run "git remote add gitsync #{REMOTE_REPO_PATH}/#{repo_name}"
+    else
+      puts "Bad hostname"
+      repo_run "git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name}"
+    end
   end
 
   def log_error(message)
@@ -103,6 +109,10 @@ class Repository
   end
 
   def remote_run(*commands)
-    system %{ssh #{REMOTE_SYNC_HOST} '#{join_commands(commands)}'}
+    if `hostname` =~ /robmk/
+      run(*commands)
+    else
+      system %{ssh #{REMOTE_SYNC_HOST} '#{join_commands(commands)}'}
+    end
   end
 end
