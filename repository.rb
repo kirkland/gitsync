@@ -17,7 +17,7 @@ class Repository
       puts "no CONFLICT found"
     end
 
-    commit_message = %{Automatic commit for #{Time.now.strftime("%Y-%m-%d")}.}
+    commit_message = %{Automatic commit on #{hostname} for #{Time.now.strftime("%Y-%m-%d")}.}
     repo_run "git add -A", %{git commit -m "#{commit_message}"}
     true
   end
@@ -32,10 +32,8 @@ class Repository
 
   def set_remote
     if `hostname` =~ /robmk/
-      puts "Good hostname"
       repo_run "git remote add gitsync #{REMOTE_REPO_PATH}/#{repo_name}"
     else
-      puts "Bad hostname"
       repo_run "git remote add gitsync #{REMOTE_SYNC_HOST}:#{REMOTE_REPO_PATH}/#{repo_name}"
     end
   end
@@ -114,5 +112,9 @@ class Repository
     else
       system %{ssh #{REMOTE_SYNC_HOST} '#{join_commands(commands)}'}
     end
+  end
+
+  def hostname
+    `hostname`.chomp
   end
 end
