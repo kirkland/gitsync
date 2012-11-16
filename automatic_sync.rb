@@ -2,6 +2,10 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/repository')
 
-["#{ENV['HOME']}/n"].each do |dir|
-  Repository.sync(dir)
+['n', 'tcb', 'money', 'yefim', 'levelup', 'journal'].each do |dir|
+  begin
+    Repository.sync("#{ENV['HOME']}/#{dir}")
+  rescue => e
+    puts "Oh no, an error! Maybe this is not a directory, or not a repository! exception: #{e.inspect}"
+  end
 end
