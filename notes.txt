@@ -8,8 +8,8 @@ for each one:
 X -- Verifies it is a git repo.
 X -- Verifies there is a remote named "gitsync" set up.
 X -- Adds and commits all files.
--- Does a git pull --rebase.
--- If rebase fails, runs git rebase --abort, and logs this.
+X -- Does a git pull --rebase.
+X -- If rebase fails, runs git rebase --abort, and logs this.
 X -- Does a git push.
 
 Another script (or an option) to start syncing a git repo. It will have some
