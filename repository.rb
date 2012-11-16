@@ -18,7 +18,7 @@ class Repository
     end
 
     commit_message = %{Automatic commit for #{Time.now.strftime("%Y-%m-%d")}.}
-    repo_run "git add .", %{git commit -m "#{commit_message}"}
+    repo_run "git add -A", %{git commit -m "#{commit_message}"}
     true
   end
 
